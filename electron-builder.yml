@@ -1,0 +1,26 @@
+appId: com.atrium.app
+productName: Atrium
+directories:
+  output: release
+  buildResources: build
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  artifactName: ${productName}-${version}-Setup.${ext}
+
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  artifactName: ${productName}-${version}-macOS.${ext}
+  category: public.app-category.productivity
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+
+files:
+  - dist/**/*
+  - dist-electron/**/*
