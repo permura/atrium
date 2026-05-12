@@ -3,6 +3,7 @@ import { useStore } from './store'
 import { Sidebar } from './components/Sidebar'
 import { TabBar } from './components/TabBar'
 import { WebViewPanel } from './components/WebViewPanel'
+import { HomePage } from './components/HomePage'
 import { StatusBar } from './components/StatusBar'
 import { AddDialog } from './components/AddDialog'
 import { SettingsDialog } from './components/SettingsDialog'
@@ -19,11 +20,25 @@ export default function App() {
     addTab,
     removeTab,
     reorderTabs,
+    reorderProviders,
+    editProvider,
+    deleteProvider,
+    clearProviderTabs,
   } = useStore()
 
+  const [homeActive, setHomeActive] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
   const [showAdd, setShowAdd] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+
+  const handleSwitchProvider = useCallback((url: string) => {
+    setHomeActive(false)
+    switchProvider(url)
+  }, [switchProvider])
+
+  const handleHome = useCallback(() => {
+    setHomeActive(true)
+  }, [])
 
   const handleRefresh = useCallback(() => {
     setRefreshKey((k) => k + 1)
@@ -42,37 +57,51 @@ export default function App() {
     }
   }, [activeTab, addTab])
 
+  const activeUrl = homeActive ? '' : (activeTab?.url ?? '')
+
   return (
     <div style={styles.root}>
       <Sidebar
         providers={providers}
-        activeUrl={activeTab?.url ?? ''}
-        onSwitchProvider={switchProvider}
+        activeUrl={activeUrl}
+        homeActive={homeActive}
+        onHome={handleHome}
+        onSwitchProvider={handleSwitchProvider}
         onAdd={() => setShowAdd(true)}
         onRefresh={handleRefresh}
         onSettings={() => setShowSettings(true)}
+        onReorderProvider={reorderProviders}
+        onEditProvider={editProvider}
+        onDeleteProvider={deleteProvider}
+        onClearProviderTabs={clearProviderTabs}
       />
       <div style={styles.main}>
-        <TabBar
-          tabs={activeProviderTabs}
-          activeTabId={activeTabId}
-          onSwitch={switchTab}
-          onRemove={removeTab}
-          onReorder={reorderTabs}
-          onAddInstance={handleAddInstance}
-        />
-        <div style={styles.content}>
-          {tabs.map((tab) => (
-            <WebViewPanel
-              key={tab.id}
-              tabId={tab.id}
-              url={tab.url}
-              active={tab.id === activeTabId}
-              refreshKey={tab.id === activeTabId ? refreshKey : 0}
+        {homeActive ? (
+          <HomePage />
+        ) : (
+          <>
+            <TabBar
+              tabs={activeProviderTabs}
+              activeTabId={activeTabId}
+              onSwitch={switchTab}
+              onRemove={removeTab}
+              onReorder={reorderTabs}
+              onAddInstance={handleAddInstance}
             />
-          ))}
-        </div>
-        <StatusBar activeTab={activeTab} />
+            <div style={styles.content}>
+              {tabs.map((tab) => (
+                <WebViewPanel
+                  key={tab.id}
+                  tabId={tab.id}
+                  url={tab.url}
+                  active={tab.id === activeTabId}
+                  refreshKey={tab.id === activeTabId ? refreshKey : 0}
+                />
+              ))}
+            </div>
+            <StatusBar activeTab={activeTab} />
+          </>
+        )}
       </div>
       {showAdd && (
         <AddDialog onAdd={handleAdd} onClose={() => setShowAdd(false)} />
@@ -88,7 +117,7 @@ const styles: Record<string, React.CSSProperties> = {
   root: {
     display: 'flex',
     height: '100vh',
-    background: '#252536',
+    background: '#F3F3F5',
   },
   main: {
     display: 'flex',

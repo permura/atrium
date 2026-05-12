@@ -121,9 +121,9 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
               <button
                 style={{
                   ...styles.miniBtn,
-                  background: shortcutSaved ? '#a6e3a1' : 'transparent',
-                  color: shortcutSaved ? '#1e1f2e' : '#89b4fa',
-                  borderColor: '#89b4fa',
+                  background: shortcutSaved ? '#34C759' : 'transparent',
+                  color: shortcutSaved ? '#1D1D1F' : '#007AFF',
+                  borderColor: '#007AFF',
                 }}
                 onClick={saveShortcut}
               >
@@ -218,7 +218,7 @@ function SettingRow({
       <button
         style={{
           ...styles.toggle,
-          background: enabled ? '#89b4fa' : '#45475a',
+          background: enabled ? '#34C759' : '#D1D1D6',
         }}
         onClick={onToggle}
         title={enabled ? '已开启' : '已关闭'}
@@ -238,18 +238,18 @@ const styles: Record<string, React.CSSProperties> = {
   overlay: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0,0,0,0.5)',
+    background: 'rgba(0,0,0,0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
   },
   dialog: {
-    background: '#2a2b3d',
+    background: '#FFFFFF',
     borderRadius: 12,
     width: 520,
     maxHeight: '80vh',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+    boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
@@ -259,11 +259,11 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '16px 20px',
-    borderBottom: '1px solid #313244',
+    borderBottom: '1px solid #E5E5EA',
     flexShrink: 0,
   },
   title: {
-    color: '#cdd6f4',
+    color: '#1D1D1F',
     fontSize: 16,
     fontWeight: 600,
     margin: 0,
@@ -271,7 +271,7 @@ const styles: Record<string, React.CSSProperties> = {
   closeBtn: {
     background: 'none',
     border: 'none',
-    color: '#9399b2',
+    color: '#8E8E93',
     fontSize: 20,
     cursor: 'pointer',
     width: 28,
@@ -291,7 +291,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 10,
     marginTop: 16,
     marginBottom: 8,
-    color: '#89b4fa',
+    color: '#007AFF',
     fontSize: 11,
     fontWeight: 600,
     textTransform: 'uppercase' as const,
@@ -300,7 +300,7 @@ const styles: Record<string, React.CSSProperties> = {
   sectionLine: {
     flex: 1,
     height: 1,
-    background: '#313244',
+    background: '#E5E5EA',
   },
   row: {
     display: 'flex',
@@ -315,13 +315,13 @@ const styles: Record<string, React.CSSProperties> = {
   },
   rowLabel: {
     display: 'block',
-    color: '#cdd6f4',
+    color: '#1D1D1F',
     fontSize: 13,
     fontWeight: 500,
   },
   rowDesc: {
     display: 'block',
-    color: '#585b70',
+    color: '#8E8E93',
     fontSize: 11,
     marginTop: 2,
   },
@@ -335,9 +335,9 @@ const styles: Record<string, React.CSSProperties> = {
     width: 150,
     padding: '6px 10px',
     borderRadius: 6,
-    border: '1px solid #45475a',
-    background: '#1e1f2e',
-    color: '#cdd6f4',
+    border: '1px solid #D1D1D6',
+    background: '#F5F5F7',
+    color: '#1D1D1F',
     fontSize: 13,
     fontFamily: 'monospace',
     cursor: 'pointer',
@@ -345,13 +345,13 @@ const styles: Record<string, React.CSSProperties> = {
     userSelect: 'none',
   },
   recording: {
-    borderColor: '#89b4fa',
-    color: '#89b4fa',
+    borderColor: '#007AFF',
+    color: '#007AFF',
   },
   miniBtn: {
     background: 'transparent',
-    border: '1px solid #45475a',
-    color: '#9399b2',
+    border: '1px solid #D1D1D6',
+    color: '#6E6E73',
     padding: '6px 10px',
     borderRadius: 6,
     cursor: 'pointer',
@@ -359,7 +359,7 @@ const styles: Record<string, React.CSSProperties> = {
     whiteSpace: 'nowrap',
   },
   error: {
-    color: '#f38ba8',
+    color: '#FF3B30',
     fontSize: 11,
     marginTop: 2,
     paddingLeft: 2,
@@ -380,13 +380,13 @@ const styles: Record<string, React.CSSProperties> = {
     width: 20,
     height: 20,
     borderRadius: 10,
-    background: '#ffffff',
+    background: '#FFFFFF',
     transition: 'transform 0.2s',
   },
   dangerBtn: {
     background: 'transparent',
-    border: '1px solid #f38ba8',
-    color: '#f38ba8',
+    border: '1px solid #FF3B30',
+    color: '#FF3B30',
     padding: '5px 14px',
     borderRadius: 6,
     cursor: 'pointer',

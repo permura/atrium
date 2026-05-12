@@ -54,7 +54,7 @@ export function WebViewPanel({ tabId, url, active, refreshKey }: WebViewPanelPro
         display: active ? 'flex' : 'none',
         flex: 1,
         overflow: 'hidden',
-        background: '#1e1f2e',
+        background: '#FFFFFF',
       }}
     />
   )

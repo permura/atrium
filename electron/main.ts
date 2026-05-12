@@ -50,7 +50,24 @@ const chromeUA = isMac
   ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
   : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
+function getAppIcon(): nativeImage | null {
+  // Prefer rounded version, then original PNG, then ICNS
+  const rounded = join(app.getAppPath(), 'build', 'icon-rounded.png')
+  const png = join(app.getAppPath(), 'build', 'image.png')
+  const icns = join(app.getAppPath(), 'build', 'icon.icns')
+  if (existsSync(rounded)) return nativeImage.createFromPath(rounded)
+  if (existsSync(png)) return nativeImage.createFromPath(png)
+  if (existsSync(icns)) return nativeImage.createFromPath(icns)
+  return null
+}
+
 function createWindow() {
+  const appIcon = getAppIcon()
+
+  if (isMac && appIcon) {
+    app.dock.setIcon(appIcon)
+  }
+
   win = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -59,6 +76,7 @@ function createWindow() {
     title: 'Atrium',
     autoHideMenuBar: true,
     show: !config.startMinimized,
+    ...(appIcon ? { icon: appIcon } : {}),
     webPreferences: {
       webviewTag: true,
       preload: join(__dirname, 'preload.js'),
@@ -89,24 +107,28 @@ function createWindow() {
 }
 
 function createTray() {
-  const canvas = Buffer.alloc(16 * 16 * 4)
-  for (let y = 0; y < 16; y++) {
-    for (let x = 0; x < 16; x++) {
-      const i = (y * 16 + x) * 4
-      const inSquare = x >= 2 && x <= 13 && y >= 2 && y <= 13
-      const inInner = x >= 5 && x <= 10 && y >= 5 && y <= 10
-      if (inInner) {
-        canvas[i] = 137; canvas[i + 1] = 180; canvas[i + 2] = 250; canvas[i + 3] = 255
-      } else if (inSquare) {
-        canvas[i] = 205; canvas[i + 1] = 214; canvas[i + 2] = 244; canvas[i + 3] = 180
-      } else {
-        canvas[i + 3] = 0
-      }
-    }
-  }
-
-  const icon = nativeImage.createFromBuffer(canvas, { width: 16, height: 16 })
-  tray = new Tray(icon)
+  const appIcon = getAppIcon()
+  const trayIcon = appIcon
+    ? appIcon.resize({ width: 16, height: 16 })
+    : (() => {
+        const canvas = Buffer.alloc(16 * 16 * 4)
+        for (let y = 0; y < 16; y++) {
+          for (let x = 0; x < 16; x++) {
+            const i = (y * 16 + x) * 4
+            const inSquare = x >= 2 && x <= 13 && y >= 2 && y <= 13
+            const inInner = x >= 5 && x <= 10 && y >= 5 && y <= 10
+            if (inInner) {
+              canvas[i] = 137; canvas[i + 1] = 180; canvas[i + 2] = 250; canvas[i + 3] = 255
+            } else if (inSquare) {
+              canvas[i] = 205; canvas[i + 1] = 214; canvas[i + 2] = 244; canvas[i + 3] = 180
+            } else {
+              canvas[i + 3] = 0
+            }
+          }
+        }
+        return nativeImage.createFromBuffer(canvas, { width: 16, height: 16 })
+      })()
+  tray = new Tray(trayIcon)
   tray.setToolTip('Atrium')
 
   const contextMenu = Menu.buildFromTemplate([

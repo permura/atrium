@@ -26,16 +26,24 @@ const quickProviders: QuickProvider[] = [
   { name: '文心一言', url: 'https://yiyan.baidu.com', emoji: '📜' },
   { name: '元宝', url: 'https://yuanbao.tencent.com', emoji: '💰' },
   { name: '星火', url: 'https://xinghuo.xfyun.cn', emoji: '🔥' },
-  { name: '混元', url: 'https://hunyuan.tencent.com', emoji: '☁️' },
+
   { name: 'Pi', url: 'https://pi.ai', emoji: '🤗' },
 ]
 
-function getFavicon(url: string, size = 20) {
-  try {
-    return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=${size}`
-  } catch {
-    return ''
-  }
+import { getIcon } from '../icons'
+
+function QuickIcon({ url, emoji }: { url: string; emoji: string }) {
+  const icon = getIcon(url)
+  const [failed, setFailed] = useState(false)
+  if (!icon || failed) return <span style={{ fontSize: 16, lineHeight: 1 }}>{emoji}</span>
+  return (
+    <img
+      src={icon}
+      style={{ width: 18, height: 18 }}
+      onError={() => setFailed(true)}
+      alt=""
+    />
+  )
 }
 
 const emojiOptions = ['🌐', '🤖', '💬', '🧠', '✨', '💡', '🔮', '📚', '⚡', '🎯']
@@ -71,12 +79,7 @@ export function AddDialog({ onAdd, onClose }: AddDialogProps) {
               onClick={() => handleQuickAdd(p)}
               title={p.url}
             >
-              <img
-                src={getFavicon(p.url)}
-                style={styles.quickIcon}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                alt=""
-              />
+              <QuickIcon url={p.url} emoji={p.emoji} />
               <span style={styles.quickEmoji}>{p.emoji}</span>
               <span style={styles.quickName}>{p.name}</span>
             </button>
@@ -133,29 +136,29 @@ const styles: Record<string, React.CSSProperties> = {
   overlay: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0,0,0,0.5)',
+    background: 'rgba(0,0,0,0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
   },
   dialog: {
-    background: '#2a2b3d',
+    background: '#FFFFFF',
     borderRadius: 12,
     padding: 24,
     width: 440,
     maxHeight: '90vh',
     overflow: 'auto',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+    boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
   },
   title: {
-    color: '#cdd6f4',
+    color: '#1D1D1F',
     fontSize: 16,
     fontWeight: 600,
     margin: '0 0 14px 0',
   },
   sectionLabel: {
-    color: '#9399b2',
+    color: '#6E6E73',
     fontSize: 12,
     marginBottom: 8,
   },
@@ -168,13 +171,13 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: 5,
-    background: '#1e1f2e',
-    border: '1px solid #45475a',
+    background: '#F5F5F7',
+    border: '1px solid #D1D1D6',
     borderRadius: 8,
     padding: '6px 12px',
     cursor: 'pointer',
     transition: 'border-color 0.15s, background 0.15s',
-    color: '#cdd6f4',
+    color: '#1D1D1F',
     fontSize: 13,
   },
   quickIcon: {
@@ -196,14 +199,14 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 10,
   },
   dividerText: {
-    color: '#585b70',
+    color: '#8E8E93',
     fontSize: 11,
     flexShrink: 0,
     paddingRight: 10,
   },
   label: {
     display: 'block',
-    color: '#9399b2',
+    color: '#6E6E73',
     fontSize: 12,
     marginBottom: 4,
     marginTop: 10,
@@ -212,9 +215,9 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     padding: '8px 12px',
     borderRadius: 6,
-    border: '1px solid #45475a',
-    background: '#1e1f2e',
-    color: '#cdd6f4',
+    border: '1px solid #D1D1D6',
+    background: '#F5F5F7',
+    color: '#1D1D1F',
     fontSize: 13,
     outline: 'none',
     boxSizing: 'border-box',
@@ -227,7 +230,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   emojiOption: {
     background: 'transparent',
-    border: '2px solid #45475a',
+    border: '2px solid #D1D1D6',
     borderRadius: 8,
     fontSize: 22,
     cursor: 'pointer',
@@ -235,8 +238,8 @@ const styles: Record<string, React.CSSProperties> = {
     transition: 'border-color 0.15s',
   },
   emojiSelected: {
-    borderColor: '#89b4fa',
-    background: 'rgba(137,180,250,0.15)',
+    borderColor: '#007AFF',
+    background: 'rgba(0,122,255,0.10)',
   },
   actions: {
     display: 'flex',
@@ -246,17 +249,17 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cancelBtn: {
     background: 'transparent',
-    border: '1px solid #45475a',
-    color: '#9399b2',
+    border: '1px solid #D1D1D6',
+    color: '#6E6E73',
     padding: '6px 16px',
     borderRadius: 6,
     cursor: 'pointer',
     fontSize: 13,
   },
   confirmBtn: {
-    background: '#89b4fa',
+    background: '#007AFF',
     border: 'none',
-    color: '#1e1f2e',
+    color: '#FFFFFF',
     padding: '6px 20px',
     borderRadius: 6,
     cursor: 'pointer',

@@ -117,6 +117,96 @@ export function useStore() {
     })
   }, [])
 
+  const reorderProviders = useCallback((fromUrl: string, toUrl: string) => {
+    setTabs((prev) => {
+      // Get current provider order from tabs
+      const seen = new Set<string>()
+      const providerOrder: string[] = []
+      for (const t of prev) {
+        if (!seen.has(t.url)) {
+          seen.add(t.url)
+          providerOrder.push(t.url)
+        }
+      }
+
+      const fromIdx = providerOrder.indexOf(fromUrl)
+      const toIdx = providerOrder.indexOf(toUrl)
+      if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx) return prev
+
+      // Move fromUrl to before toUrl
+      providerOrder.splice(fromIdx, 1)
+      const insertAt = providerOrder.indexOf(toUrl)
+      providerOrder.splice(insertAt, 0, fromUrl)
+
+      // Group tabs by URL, preserving relative order within each group
+      const groups = new Map<string, Tab[]>()
+      for (const t of prev) {
+        if (!groups.has(t.url)) groups.set(t.url, [])
+        groups.get(t.url)!.push(t)
+      }
+
+      // Rebuild tabs array in new provider order
+      const next: Tab[] = []
+      for (const url of providerOrder) {
+        next.push(...(groups.get(url) ?? []))
+      }
+      saveTabs(next)
+      return next
+    })
+  }, [])
+
+  const editProvider = useCallback((url: string, name: string, emoji: string, newUrl?: string) => {
+    setTabs((prev) => {
+      const targetUrl = newUrl?.trim() || url
+      if (targetUrl !== url) {
+        // Prevent merging into existing provider
+        const existing = prev.find((t) => t.url === targetUrl)
+        if (existing && targetUrl !== url) return prev
+      }
+      const next = prev.map((t) => {
+        if (t.url !== url) return t
+        const base = t.name.replace(/ \d+$/, '')
+        const suffix = t.name.slice(base.length)
+        return { ...t, url: targetUrl, name: name + suffix, emoji }
+      })
+      saveTabs(next)
+      return next
+    })
+  }, [])
+
+  const deleteProvider = useCallback((url: string) => {
+    setTabs((prev) => {
+      const next = prev.filter((t) => t.url !== url)
+      if (next.length === 0) return prev
+      saveTabs(next)
+      setActiveTabId((aid) => {
+        const stillExists = next.find((t) => t.id === aid)
+        return stillExists ? aid : next[0].id
+      })
+      return next
+    })
+  }, [])
+
+  const clearProviderTabs = useCallback((url: string) => {
+    setTabs((prev) => {
+      const providerTabs = prev.filter((t) => t.url === url)
+      if (providerTabs.length <= 1) return prev
+      // Keep only the first tab, reset its name
+      const baseName = providerTabs[0].name.replace(/ \d+$/, '')
+      const next = prev.map((t) => {
+        if (t.url !== url) return t
+        if (t.id === providerTabs[0].id) return { ...t, name: baseName }
+        return null as unknown as Tab
+      }).filter(Boolean)
+      saveTabs(next)
+      setActiveTabId((aid) => {
+        const stillExists = next.find((t) => t.id === aid)
+        return stillExists ? aid : next[0].id
+      })
+      return next
+    })
+  }, [])
+
   return {
     tabs,
     activeTab,
@@ -128,5 +218,9 @@ export function useStore() {
     addTab,
     removeTab,
     reorderTabs,
+    reorderProviders,
+    editProvider,
+    deleteProvider,
+    clearProviderTabs,
   }
 }
