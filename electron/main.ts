@@ -7,6 +7,7 @@ const isMac = platform() === 'darwin'
 
 let win: BrowserWindow | null = null
 let tray: Tray | null = null
+let forceQuit = false
 
 interface AppConfig {
   shortcut: string
@@ -95,7 +96,7 @@ function createWindow() {
   }
 
   win.on('close', (e) => {
-    if (tray) {
+    if (!forceQuit && tray) {
       e.preventDefault()
       win?.hide()
     }
@@ -140,6 +141,7 @@ function createTray() {
     {
       label: '退出',
       click: () => {
+        forceQuit = true
         tray = null
         globalShortcut.unregisterAll()
         app.quit()
@@ -222,6 +224,8 @@ app.whenReady().then(() => {
     }
   })
 })
+
+app.on('before-quit', () => { forceQuit = true })
 
 app.on('window-all-closed', () => {})
 

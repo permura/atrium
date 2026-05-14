@@ -24,3 +24,4 @@ nsis:
 files:
   - dist/**/*
   - dist-electron/**/*
+  - build/icon-rounded.png
